@@ -1,0 +1,5 @@
+{
+  "APP_ENV": "prod",
+  "API_BASE_URL": "/api/v1",
+  "PORTAL_WEB_URL": ""
+}
