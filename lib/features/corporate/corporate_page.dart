@@ -61,7 +61,7 @@ class _CorporateViewState extends State<_CorporateView> {
           if (c != null && c.unknown > 0) (context.tr('Status unknown', 'ไม่ทราบสถานะ'), '${c.unknown}'),
         ]),
         const SizedBox(height: 16),
-        BusinessCard(title: context.tr('Lot overview', 'ภาพรวมล็อต'), child: Wrap(spacing: 24, runSpacing: 12, children: [for (final l in summary?.lots ?? const <LotOverview>[]) SizedBox(width: 240, child: FieldDetails(items: [(l.lot ?? context.tr('Unknown lot', 'ไม่ทราบล็อต'), '${l.counts.total} ${context.tr('numbers', 'เลขหมาย')}'), (context.tr('Active / Inactive / Suspended', 'ใช้งาน / ไม่ใช้งาน / ระงับ'), '${l.counts.active} / ${l.counts.inactive} / ${l.counts.suspended}'), if (l.counts.terminated > 0) (context.tr('Terminated', 'ยกเลิกแล้ว'), '${l.counts.terminated}')]))])),
+        BusinessCard(title: context.tr('Lot overview', 'ภาพรวมล็อต'), child: Wrap(spacing: 24, runSpacing: 12, children: [for (final l in summary?.lots ?? const <LotOverview>[]) SizedBox(width: 240, child: FieldDetails(items: [(l.lot ?? context.tr('Unknown lot', 'ไม่ทราบล็อต'), '${l.counts.total} ${context.tr('numbers', 'เลขหมาย')}'), (context.tr('Product', 'ผลิตภัณฑ์'), l.productName ?? '—'), (context.tr('Quota type', 'ประเภทโควตา'), lotQuotaTypeText(context, l.quotaType)),(context.tr('Active / Inactive / Suspended', 'ใช้งาน / ไม่ใช้งาน / ระงับ'), '${l.counts.active} / ${l.counts.inactive} / ${l.counts.suspended}'), if (l.counts.terminated > 0) (context.tr('Terminated', 'ยกเลิกแล้ว'), '${l.counts.terminated}')]))])),
         const SizedBox(height: 16),
         if (state.commandError != null) Padding(padding: const EdgeInsets.all(12), child: Text(businessError(context, state.commandError), style: TextStyle(color: Theme.of(context).colorScheme.error))),
         if (state.results.isNotEmpty) BusinessCard(title: context.tr('Operation results', 'ผลการดำเนินการ'), child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -86,3 +86,12 @@ class _CorporateViewState extends State<_CorporateView> {
     },
   );
 }
+
+/// Lot quota type label; anything but the three CRM types reads as unknown, null as "—".
+String lotQuotaTypeText(BuildContext context, String? type) => switch (type) {
+  null => '—',
+  'product-quota' => context.tr('Product quota', 'โควตาตามผลิตภัณฑ์'),
+  'share-in-group' => context.tr('Share in group', 'แชร์ในกลุ่ม'),
+  'corporate-quota' => context.tr('Corporate quota', 'โควตาองค์กร'),
+  _ => context.tr('Unknown', 'ไม่ทราบ'),
+};

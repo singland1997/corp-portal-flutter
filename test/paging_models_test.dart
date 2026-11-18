@@ -10,13 +10,16 @@ void main() {
       'items': [{'id': 'n1', 'mobile': '0810000001', 'status': 'active', 'lot': null, 'usageMb': 12.5}],
       'total': 31, 'page': 2, 'pageSize': 10,
       'counts': {'total': 31, 'active': 20, 'inactive': 1, 'suspended': 0},
-      'lots': [{'lot': 'L1', 'counts': {'total': 30, 'active': 20, 'inactive': 1, 'suspended': 0}}, {'lot': null, 'counts': {'total': 1, 'active': 0, 'inactive': 0, 'suspended': 0}}],
+      'lots': [{'lot': 'L1', 'productName': 'Business Connect', 'quotaType': 'share-in-group', 'counts': {'total': 30, 'active': 20, 'inactive': 1, 'suspended': 0}}, {'lot': null, 'counts': {'total': 1, 'active': 0, 'inactive': 0, 'suspended': 0}}],
       'updatedAt': '2026-11-17T04:00:00Z', 'capabilities': {'suspend': false, 'resume': false},
     });
     expect(page.result.items.single.mobile, '0810000001');
     expect((page.result.total, page.result.page, page.result.pageSize), (31, 2, 10));
     expect(page.counts.unknown, 10);
     expect(page.lots.map((l) => l.lot), ['L1', null]);
+    // Unknown product stays null (shown as "—"), never guessed from the package name.
+    expect(page.lots.map((l) => l.productName), ['Business Connect', null]);
+    expect(page.lots.map((l) => l.quotaType), ['share-in-group', null]);
     expect(page.canSuspend, isFalse);
   });
 
@@ -34,6 +37,13 @@ void main() {
     expect(n.quotas.map((q) => q.capMax), [true, false]);
     expect(quotaText(n.quotas), '70 MB / 70 MB · 12.5 MB / 30 MB');
     expect(quotaText(MobileNumber.fromJson({'id': 'n2', 'mobile': '0'}).quotas), '—');
+  });
+
+  test('a number keeps CRM product, package and subscriber status apart', () {
+    final n = MobileNumber.fromJson({'id': 'n1', 'mobile': '0810000001', 'package': 'Bundle 10GB', 'productName': 'Bundle 10GB', 'packageName': 'Data 10GB', 'status': 'active', 'sourceStatus': 'ACTIVE'});
+    expect((n.productName, n.packageName, n.sourceStatus), ('Bundle 10GB', 'Data 10GB', 'ACTIVE'));
+    final old = MobileNumber.fromJson({'id': 'n2', 'mobile': '0810000002', 'package': 'Data 10GB'});
+    expect((old.productName, old.packageName, old.sourceStatus), (null, null, null));
   });
 
   test('filters travel with the paging parameters', () {
