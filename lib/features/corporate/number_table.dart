@@ -74,13 +74,15 @@ class _NumberTableState extends State<NumberTable> {
     actions: (n) => IconButton(tooltip: context.tr('Details', 'รายละเอียด'), icon: const Icon(Icons.visibility_outlined), onPressed: () => showDetails(context, n.mobile, [
       (context.tr('Mobile number', 'เลขหมาย'), n.mobile), ('ICCID', n.iccid ?? '—'),
       (context.tr('Assigned to', 'ผู้ใช้งาน'), n.owner ?? '—'), (context.tr('Lot', 'ล็อต'), n.lot ?? '—'),
-      (context.tr('Package', 'แพ็กเกจ'), n.package ?? '—'),
+      (context.tr('Product', 'ผลิตภัณฑ์'), n.productName ?? '—'),
+      (context.tr('Package', 'แพ็กเกจ'), n.packageName ?? n.package ?? '—'),
       for (final (i, q) in n.quotas.indexed) (
         '${context.tr('Data quota', 'โควตาดาต้า')} ${i + 1}${q.capMax == true ? ' (Cap max)' : ''}',
         '${quotaText([q])} · ${context.tr('expires', 'หมดอายุ')} ${dateText(q.expiresAt, time: false)}',
       ),
       if (n.quotas.isEmpty) (context.tr('Data quota', 'โควตาดาต้า'), '—'),
       (context.tr('Data used', 'ข้อมูลที่ใช้'), dataSize(n.usageMb)), (context.tr('Status', 'สถานะ'), statusText(context, n.status)),
+      (context.tr('Subscriber status (CRM)', 'สถานะผู้ใช้บริการ (CRM)'), n.sourceStatus ?? '—'),
     ])),
   );
 }
